@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
+# 废弃 2019.05.24
 
 from IPy import IP
 from IPy import IPSet
