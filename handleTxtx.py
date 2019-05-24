@@ -6,6 +6,7 @@ import time
 import pandas as pd
 from netaddr import iprange_to_cidrs
 from netaddr import cidr_merge
+from netaddr import IPSet
 
 """
 国家两位代码 - GRE
@@ -29,14 +30,12 @@ country_codes = ['SG', 'TW', 'JP', 'KR', 'RU', 'VN', 'AU', 'EU', 'US']
 
 # set colums names
 # refer: https://github.com/ipipdotnet/ipdb-python
-names = ['startIP', 'endIP', 'country_name', 'region_name', 'city_name', 'owner_domain', \
-	 'isp_domain', 'latitude', 'longitude', 'timezone', 'utc_offset', 'china_admin_code', \
-	 'idd_code', 'country_code', 'continent_code']
+names = ['startIP', 'endIP', 'country_code', 'continent_code']
 
 # read data; set dtype
 s1 = time.time()
-# data = pd.read_csv('mytestip.txtx', names=names, sep='\s+', dtype='category')
-data = pd.read_csv('mydata4vipday2.txtx', names=names, sep='\s+', dtype='category')
+data = pd.read_csv('mytestip.txtx', names=names, sep='\s+', dtype='category', usecols=[0, 1, 13, 14])
+# data = pd.read_csv('mydata4vipday2.txtx', names=names, sep='\s+', dtype='category', usecols=[0, 1, 13, 14])
 e1 = time.time()
 print 'e1s1 spend time {}s'.format(e1 - s1)
 
@@ -48,7 +47,6 @@ print 'e2s2 spend time {}s'.format(e2 - s2)
 # 纳米比亚 国家两位代码位NA 与pandas默认空值冲突 清洗为NAM
 # data['country_code'] = data['country_code'].cat.add_categories(['NAM']);
 # data.country_code.fillna('NAM', inplace=True)
-
 # change column order
 # cols = list(data)
 # cols.insert(2, cols.pop())
@@ -71,26 +69,28 @@ def filter_ccode(ccode):
     return country_df
 
 for ccode in country_codes:
-    l = []
+    # l = []
+    s = IPSet()
     s3 = time.time()
     try:
 	for i in filter_ccode(ccode)['CIDR'].values:
-	    l.extend(i)
-	l = cidr_merge(l)
-	pd.Series(l).to_csv('result/setlist/{}.list'.format(ccode.lower()), index=False, header=False)
+	    # l.extend(i)
+	    s = s.union(IPSet(i))
+	# l = cidr_merge(l)
 	e3 = time.time()
 	print 'e3s3 {} spend time {}s'.format(ccode, e3 - s3)
+	s4 = time.time()
+	pd.Series(list(s._cidrs)).to_csv('result/setlist/{}.list'.format(ccode.lower()), index=False, header=False)
+	e4 = time.time()
+	print 'e4s4 {} spend time {}s'.format(ccode, e4 - s4)
     # Capture KeyError: 'CIDR'
     except KeyError:
 	pass
 
-
-'''
-for ccode in country_codes:
-    try:
-	df = filter_ccode(ccode)['CIDR'].str.split(',', expand=True).stack()
-	df = pd.Series(CIDR_IPSet(df))
-    except IndexError:
-	df = pd.Series([])
-    df.to_csv('result/setlist/{}.list'.format(ccode.lower()), index=False, header=False)
-'''
+# for ccode in country_codes:
+#     try:
+# 	df = filter_ccode(ccode)['CIDR'].str.split(',', expand=True).stack()
+# 	df = pd.Series(CIDR_IPSet(df))
+#     except IndexError:
+# 	df = pd.Series([])
+#     df.to_csv('result/setlist/{}.list'.format(ccode.lower()), index=False, header=False)
