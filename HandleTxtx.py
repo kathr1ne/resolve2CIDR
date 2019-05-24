@@ -6,7 +6,6 @@ import time
 import pandas as pd
 from netaddr import iprange_to_cidrs
 from netaddr import cidr_merge
-from netaddr import IPSet
 
 """
 国家两位代码 - GRE
@@ -39,41 +38,40 @@ print 'e1s1 [read_csv] spend time {}s'.format(e1 - s1)
 data['startIP'] = data['startIP'].astype('object')
 data['endIP'] = data['endIP'].astype('object')
 
-def filter_ccode(ccode):
+def sort_by_ccode(ccode):
+    s3 = time.time()
     if ccode == 'EU':
-	country_df = data[data['continent_code'] == ccode].copy()
+	df = data[data['continent_code'] == ccode].copy()
     else:
-	country_df = data[data['country_code'] == ccode].copy()
+	df = data[data['country_code'] == ccode].copy()
     # Capture ValueError
     # https://stackoverflow.com/questions/55321537/df-apply-valueerror-cannot-set-a-frame-with-no-defined-index-and-a-value-that
-    try:
-        country_df['CIDR'] = country_df.apply(lambda df: iprange_to_cidrs(df['startIP'], df['endIP']), axis=1)
-    except ValueError:
-        pass
-    return country_df
-    # return [IPSet(iprange_to_cidrs(i.startIP, i.endIP)) for i in country_df.itertuples()]
+    # try:
+    #     df['CIDR'] = df.apply(lambda x: iprange_to_cidrs(x['startIP'], x['endIP']), axis=1)
+    # except ValueError:
+    #     pass
+    # return df
+    l = []
+    for i in df.itertuples():
+	cidr =  iprange_to_cidrs(i.startIP, i.endIP)
+	l.extend(cidr)
+    l = cidr_merge(l)
+    e3 = time.time()
+    print 'e3s3 {} [sort by ccode] spend time {}s'.format(ccode, e3 - s3)
+    return l
 
 for ccode in country_codes:
-    l = []
-    # s = IPSet()
-    s3 = time.time()
     try:
-	for i in filter_ccode(ccode).itertuples():
-	    l.extend(i.CIDR)
-	    # s = s.union(IPSet(i))
-	l = cidr_merge(l)
-	# 瓶颈 花费极大部分时间循环union CIDR
-	# for i in filter_ccode(ccode):
-	#     s = s.union(i)
-	e3 = time.time()
-	print 'e3s3 {} [filter country code] spend time {}s'.format(ccode, e3 - s3)
-
+	# for i in sort_by_ccode(ccode).itertuples():
+	#     l.extend(i.CIDR)
+	# l = cidr_merge(l)
 	# Write2File
 	s4 = time.time()
-	# pd.Series(list(s._cidrs)).to_csv('result/setlist/{}.list'.format(ccode.lower()), index=False, header=False)
-	pd.Series(l).to_csv('result/setlist/{}.list'.format(ccode.lower()), index=False, header=False)
+	lists = [str(line) + '\n' for line in sort_by_ccode(ccode)]
+	with open('result/setlist/{}.list'.format(ccode.lower()), 'w') as f:
+	    f.writelines(lists)
 	e4 = time.time()
-	print 'e4s4 {} [write file|to_csv] spend time {}s'.format(ccode, e4 - s4)
+	print 'e4s4 {} [write file] spend time {}s'.format(ccode, e4 - s4)
     # Capture KeyError: 'CIDR'
     except KeyError:
 	pass
