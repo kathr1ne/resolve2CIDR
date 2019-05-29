@@ -20,7 +20,7 @@ class Resolve2Cidr(object):
     EU - gre5   # 欧洲地区 对应txtx大洲代码
     JP - gre6   # 日本
     KR - gre7   # 韩国
-    RU - gre8   # 俄罗斯
+    RU - gre8   # 俄罗斯 注: 俄罗斯的大洲代码 为EU 处理欧洲list时需要剔除出来
     VN - gre9   # 越南
     AU - gre10  # 澳大利亚
     TH  # 泰国
@@ -60,7 +60,7 @@ class Resolve2Cidr(object):
 	"""
 	s1 = time.time()
 	data = pd.read_csv(self.txtxfile, names=self.names, usecols=self.usecols, sep='\s+', dtype='category')
-	cn_data = data[data['country_code'] == 'CN'].copy()
+	cn_data = data[data['country_code'].isin(['CN'])].copy()
 	province_array = cn_data['region_name'].unique().get_values()
 	e1 = time.time()
 	print 'pandas [read_csv] spend time {}s'.format(e1 - s1)
@@ -89,9 +89,10 @@ class Resolve2Cidr(object):
 	:return list after netaddr.cide_merge
 	"""
         if code == 'EU':
-	    dataframe = data[0][data[0]['continent_code'] == code].copy()
+	    dataframe = data[0][data[0]['continent_code'].isin([code])].copy()
+	    dataframe = dataframe[True ^ dataframe['country_code'].isin(['RU'])]
 	else:
-	    dataframe = data[0][data[0]['country_code'] == code].copy()
+	    dataframe = data[0][data[0]['country_code'].isin([code])].copy()
         return self.merge2cidr(dataframe, code)
 
     def sort_by_province(self, code):
@@ -99,10 +100,14 @@ class Resolve2Cidr(object):
 	:param code: china province array
 	:return list after netaddr.cide_merge
 	"""
-        dataframe = data[1][data[1]['region_name'] == code].copy()
+        dataframe = data[1][data[1]['region_name'].isin([code])].copy()
         return self.merge2cidr(dataframe, code)
 
     def write_file(self, code, CN=None):
+	"""
+	write setlist file
+	if CN is not None write cnsetlist
+	"""
 	if CN is None:
 	    s3 = time.time()
 	    lists = ['add {} {}{}'.format(code.lower(), str(line), '\n') for line in self.sort_by_country_code(code)]
