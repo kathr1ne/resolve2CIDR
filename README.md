@@ -1,6 +1,6 @@
 # resolve2CIDR
 
-解析[IPIP.net](ipip.net)   官方提供的mydata*.txtx文件 将起始IP段合并为 CIDR 格式
+解析[IPIP.net](www.ipip.net)   官方提供的mydata*.txtx文件 将起始IP段合并为 CIDR 格式
 
 ## 依赖
 
