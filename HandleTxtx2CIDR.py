@@ -4,9 +4,11 @@
 
 import os
 import time
+import logging
 import pandas as pd
 from netaddr import iprange_to_cidrs
 from netaddr import cidr_merge
+from logs import set_log
 
 class Resolve2Cidr(object):
     """
@@ -63,7 +65,7 @@ class Resolve2Cidr(object):
 	cn_data = data[data['country_code'].isin(['CN'])].copy()
 	province_array = cn_data['region_name'].unique().get_values()
 	e1 = time.time()
-	print 'pandas [read_csv] spend time {}s'.format(e1 - s1)
+	logging.info('pandas [read_csv] spend time {}s'.format(e1 - s1))
 	return data, cn_data, province_array
 
     def merge2cidr(self, dataframe, code):
@@ -79,7 +81,7 @@ class Resolve2Cidr(object):
 	   l.extend(cidr)
         l = cidr_merge(l)
         e2 = time.time()
-        print '{} [merge2cidr] spend time {}s'.format(code, e2 - s2)
+        logging.info('{} [merge2cidr] spend time {}s'.format(code, e2 - s2))
         return l
 
     def sort_by_country_code(self, code):
@@ -114,20 +116,20 @@ class Resolve2Cidr(object):
 	    with open('{}/{}.list'.format(dirs[0], code.lower()), 'w') as f:
 	        f.writelines(lists)
 	    e3 = time.time()
-	    print '{} [write file] spend time {}s'.format(code, e3 - s3)
-	    print '----------------'
+	    logging.info('{} [write file] spend time {}s'.format(code, e3 - s3))
 	else:
 	    s3 = time.time()
 	    lists = [str(line) + '\n' for line in self.sort_by_province(code)]
 	    with open('{}/{}.list'.format(dirs[1], code), 'w') as f:
 		f.writelines(lists)
 	    e3 = time.time()
-	    print '{} [write file] spend time {}s'.format(code, e3 - s3)
+	    logging.info('{} [write file] spend time {}s'.format(code, e3 - s3))
 
 if __name__ == '__main__':
     # workspace
     basedir = os.path.abspath(os.path.dirname(__file__))
     dirs = Resolve2Cidr.check_dir(basedir)
+    set_log(os.path.join(basedir, 'resolve2cidr.log'))
     # country_codes U need
     country_codes = ['CN', 'SG', 'TW', 'JP', 'KR', 'RU', 'VN', 'AU', 'TH', 'IN', 'EU', 'CA', 'US']
     # set colums names && usecols refer: https://github.com/ipipdotnet/ipdb-python
