@@ -19,7 +19,8 @@
 
 2. 迭代优化
     数据量偏大 使用python for循环 效率比较慢
-    在不断改代码测试时间效率中发现 循环pandas dataframe中的数据时 使用 .itertuples() 方法 效率大幅度提高 如果处理数据时 能用pandas矢量化计算 优先使用矢量化计算
+    在不断改代码测试时间效率中发现 循环pandas dataframe中的数据时
+    使用 .itertuples() 方法 效率大幅度提高 如果处理数据时 能用pandas矢量化计算 优先使用矢量化计算
     参考文章：http://www.xiejingyang.com/2018/04/24/high-performance-pandas-code/
 ```
 
