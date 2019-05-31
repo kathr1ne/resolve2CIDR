@@ -83,9 +83,10 @@ class Resolve2Cidr(object):
         """
         s2 = time.time()
         l = []
+        l_extend = l.extend
         for i in dataframe.itertuples():
             cidr = iprange_to_cidrs(i.startIP, i.endIP)
-            l.extend(cidr)
+            l_extend(cidr)
         l = cidr_merge(l)
         e2 = time.time()
         logging.info('{} [merge2cidr] spend time {}s'.format(code, e2 - s2))
