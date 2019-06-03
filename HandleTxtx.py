@@ -121,11 +121,8 @@ class Resolve2Cidr(object):
         """
         if CN is None:
             s3 = time.time()
-            lists = [
-                'add {} {}{}'.format(
-                    code.lower(),
-                    str(line),
-                    '\n') for line in self.sort_by_country_code(code)]
+            items = self.sort_by_country_code(code)
+            lists = [str(line) + '\n' for line in items]
             with open('{}/{}.list'.format(dirs[0], code.lower()), 'w') as f:
                 f.writelines(lists)
             e3 = time.time()
@@ -134,7 +131,8 @@ class Resolve2Cidr(object):
                     code, e3 - s3))
         else:
             s3 = time.time()
-            lists = [str(line) + '\n' for line in self.sort_by_province(code)]
+            items = self.sort_by_province(code)
+            lists = [str(line) + '\n' for line in items]
             with open('{}/{}.list'.format(dirs[1], code), 'w') as f:
                 f.writelines(lists)
             e3 = time.time()
