@@ -4,3 +4,4 @@ mydata4vipday2.txtx
 mytestip.txtx
 result/
 *.log
+__pycache__/
