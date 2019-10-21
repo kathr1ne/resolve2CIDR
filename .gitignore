@@ -3,4 +3,7 @@
 mydata4vipday2.txtx
 mytestip.txtx
 result/
+venv/
+rename2cnset.sh
+scp2salt.sh
 *.log
