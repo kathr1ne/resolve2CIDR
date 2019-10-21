@@ -7,4 +7,5 @@ venv/
 rename2cnset.sh
 scp2salt.sh
 *.log
+*.bak
 __pycache__/
