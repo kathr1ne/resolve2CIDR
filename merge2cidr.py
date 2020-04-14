@@ -3,12 +3,10 @@
 #
 
 import os
-import pandas as pd
-from netaddr import iprange_to_cidrs
-from netaddr import cidr_merge
 from HandleTxtx import Resolve2Cidr
 
 
+'''
 class TestClass(Resolve2Cidr):
     def __init__(self, txtxfile, names, usecols):
         self.txtxfile = txtxfile
@@ -23,6 +21,7 @@ class TestClass(Resolve2Cidr):
             l_extend(cidr)
         l = cidr_merge(l)
         return l
+'''
 
 
 if __name__ == '__main__':
@@ -37,8 +36,9 @@ if __name__ == '__main__':
         'continent_code']
     usecols = [0, 1, 2, 3, 13, 14]
     txtx_file = os.path.join(basedir, 'merge2cidr.txtx')
-    obj = TestClass(txtx_file, names, usecols)
+    # obj = TestClass(txtx_file, names, usecols)
+    obj = Resolve2Cidr(txtx_file, names, usecols)
     data = obj.read_data()
-    for i in obj.merge2cidr(data[0]):
+    for i in obj.merge2cidr(data[0], country_codes[0]):
         print(i)
     
