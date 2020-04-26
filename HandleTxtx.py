@@ -149,7 +149,7 @@ if __name__ == '__main__':
     # workspace
     basedir = os.path.abspath(os.path.dirname(__file__))
     dirs = Resolve2Cidr.check_dir(basedir)
-    set_log(os.path.join(basedir, 'resolve2cidr.log'))
+    set_log(os.path.join(basedir, 'log/resolve2cidr.log'))
     # country_codes U need
     country_codes = [
         'CN',

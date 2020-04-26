@@ -9,3 +9,4 @@ scp2salt.sh
 *.log
 *.bak
 __pycache__/
+log/
