@@ -152,6 +152,7 @@ if __name__ == '__main__':
     set_log(os.path.join(basedir, 'log/resolve2cidr.log'))
     # country_codes U need
     country_codes = [
+        'HK',
         'CN',
         'SG',
         'TW',
@@ -174,8 +175,8 @@ if __name__ == '__main__':
         'region_name',
         'country_code',
         'continent_code']
-    usecols = [0, 1, 2, 3, 13, 14]
-    txtx_file = os.path.join(basedir, 'mydata4vipday2.txtx')
+    usecols = [0, 1, 2, 3, 7, 8]
+    txtx_file = os.path.join(basedir, 'ipv4_china2_cn.txt')
     # Instantiation
     obj = Resolve2Cidr(txtx_file, names, usecols)
     data = obj.read_data()

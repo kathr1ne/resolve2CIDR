@@ -3,6 +3,8 @@
 #
 
 import os
+import sys
+sys.path.append("..")
 from HandleTxtx import Resolve2Cidr
 
 

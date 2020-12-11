@@ -1,0 +1,48 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+#
+
+
+import ipdb
+import threading
+import multiprocessing
+import pandas as pd
+from netaddr import IPNetwork
+from time import time
+
+
+def resolve_ipdb(ip, index):
+    s = time()    
+    print("Start: Thread-{}".format(index))
+    for i in ip:
+        r = db.find(i, 'CN')
+        r = [str(i), r[0], r[1], r[-2], r[-1]]
+        dic[index].append((' '.join(r) + '\n'))
+    e = time()
+    print("Finished Resolve. Thread-{} speed time {}s".format(index, e - s))
+    
+    # threadLock.acquire()
+    with open('./resolve_ipdb.txtx', 'a+') as f:
+        f.writelines(dic[index])
+    # threadLock.release()
+    
+
+db = ipdb.City("/home/kongs/resolve2CIDR/mydata4vipday2.ipdb")
+
+
+dic = {}
+threads = []
+# threadLock = threading.Lock()
+for i in range(1, 17):
+    dic[i] = []
+    ip = IPNetwork('{}.0.0.0/8'.format(i))
+    # thread = threading.Thread(target=resolve_ipdb, args=(ip, i))
+    # thread.start()
+    # print("Thread_name: {} start...".format(thread.name))
+    # threads.append(thread)
+    p = multiprocessing.Process(target=resolve_ipdb, args=(ip, i))
+    p.start()
+
+# for t in threads:
+#     t.join()
+

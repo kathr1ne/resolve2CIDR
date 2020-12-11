@@ -1,10 +1,12 @@
 *.pyc
 .env
 mydata4vipday2.txtx
+ipv4_china2_cn.txt
 mytestip.txtx
 result/
 venv/
 rename2cnset.sh
+crontab_resolve.sh
 scp2salt.sh
 *.log
 *.bak
